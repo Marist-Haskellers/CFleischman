@@ -1,1 +1,14 @@
-test
+main :: IO ()
+main = interact (showResult . doTheWork . parseInput)
+
+showResult :: String -> a
+showResult = undefined
+
+doTheWork :: a -> base
+doTheWork = undefined
+
+parseInput :: b -> String
+parseInput = undefined
+
+-----------------------------------------------------------
+
