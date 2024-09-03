@@ -1,0 +1,46 @@
+Bird Notes:
+
+f :: x -> y
+
+function 'f' takes 'x' and returns 'y'
+
+sin :: Float -> Float
+age :: Person -> Int
+add :: (Integer,Integer) -> Integer
+logBase :: Float -> (Float -> Float)
+log - uses log base e
+
+Space between function name and argument i.e. function x v.s. function
+Parentheses work also as long as you keep two arguments separate i.e. (logBase 2) (10)
+
+log (sin x) - parenthesis is important since Haskell looks at the left expression first
+
+Types:
+
+Char - characters
+Int - Integer
+Float - Floating point number
+Bool
+
+\n - new line
+
+when two -> are next to each other you go from right to left i.e. A -> B -> C means A -> (B -> C)
+if you want (A -> B) -> C you must use ()
+
+.lhs - Literate Haskell Script 
+in a .lhs every line is a comment unless starting with a ' > '
+each comment line must be separated from code with one blank line
+
+!! is the list indexing operation i.e. units!!0 = "zero"
+
+Equality Symbols:
+== (equals to)
+/= (not equals to)
+<= (less than or equal to)
+
+Conjunction of two sets is && i.e. a && b returns True if a and b do and False otherwise
+Concatenating two lists is ++ i.e. [a,b] ++ [c] = [a,b,c]
+
+where is a local definition whose context or scope is the right side of the definition
+if, then, else are reserved words, they cannot be used as names
+
