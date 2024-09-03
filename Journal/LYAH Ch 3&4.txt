@@ -1,0 +1,172 @@
+LYAH Ch 3&4 Notes:
+
+:t - explains an expression, printing the expression followed by :: (meaning has type of) and its type
+
+int - integer
+Integer - larger integer
+Float - real floating point single precision
+Double - " double the precision
+Bool - Boolean T/F
+Char - character ('a')
+
+Type variable - a variable representing any type mentioned 
+	i.e. > :t head
+	     > head :: [a] -> a
+	returns the value of type a, no matter the type
+
+=> - class constraint
+
+Typeclasses:
+
+Eq - equality testing, implements == and /=, all types mentioned except for functions are Eq
+
+Ord - types that have ordering, > < >= <=, compare takes two Ord members and returns ordering
+	Ordering is a type that can be GT, LT, EQ (greater than, less than, equal to)
+	Must be in Eq to be in Ord
+Show - presented as strings, all types except for functions are part of show
+
+Read - opposite of Show, takes string and presents it as the type it would be
+	i.e. > read "[1,2,3,4" ++ [3]
+	     > [1,2,3,4,3]
+	     
+	     > read "5"		> read "5" :: Int
+	     > Error		> 5
+	Must specify what type you want to get when only giving one input
+Enum - sequentially ordered types, they're enumerable, used in list ranges, they have defined successors and predecessors (succ and pred functions)
+	Types: (), Bool, Char, Ordering, Int, Integer, Float, Double
+Bounded - members have an upper and lower bound, minBound, maxBound, all tuples are part of Bounded if its components are in it
+	i.e. > maxBound :: Int
+	     > -2147483648
+Num - numeric typeclass, members can act like numbers, whole numbers can act like any type of the Num typeclass, must be in Show and Eq
+
+Integral - numeric typeclass only including whole numbers, int and Integer are in
+
+Floating - floating point numbers, Float and Double
+
+fromIntegral - transforms an integral into a number (when you want integral and float numbers together)
+	i.e. > fromIntegral :: (Num b, Integral a) => a-> b
+	     > fromIntegral (length [1,2,3,4]) + 3.2
+	     -- takes the int value of length of list and the float and adds them without trouble
+
+Pattern matching:
+
+> lucky :: (Integral a) => a -> String
+> lucky 7 = "LUCKY NUMBER SEVEN!"
+> lucky x = "Sorry, you're out of luck, pal!"
+> {- When lucky is called, the number input is checked from top down -}
+.
+
+> sayMe :: (Integral a) => a -> String  
+> sayMe 1 = "One!"  
+> sayMe 2 = "Two!"  
+> sayMe 3 = "Three!"  
+> sayMe 4 = "Four!"  
+> sayMe 5 = "Five!"  
+> sayMe x = "Not between 1 and 5"
+> -- x must be at bottom or it will catch all
+
+> factorial :: (Integral a) => a -> a  
+> factorial 0 = 1  
+> factorial n = n * factorial (n - 1)
+> -- specify specific pattern first i.e. factorial 0 = 1
+
+Always include a catch all at the end
+
+> addVectors :: (Num a) => (a, a) -> (a, a) -> (a, a)  
+> addVectors (x1, y1) (x2, y2) = (x1 + x2, y1 + y2)  
+
+> first :: (a, b, c) -> a  
+> first (x, _, _) = x  
+  
+> second :: (a, b, c) -> b  
+> second (_, y, _) = y  
+  
+> third :: (a, b, c) -> c  
+> third (_, _, z) = z  
+> -- _ means we don't care what it is
+
+You can match with [] and :, [1,2,3] is 1:2:3:[]
+So x:xs binds the head of a list to x, and the rest of list to xs, even if empty 
+
+> head' :: [a] -> a  
+> head' [] = error "Can't call head on an empty list, dummy!"  
+> head' (x:_) = x  
+> -- using empty list case
+
+error - takes a string and generates a runtime error, using that string as information about what kind of error occurred
+
+> tell :: (Show a) => [a] -> String  
+> tell [] = "The list is empty"  
+> tell (x:[]) = "The list has one element: " ++ show x  
+> tell (x:y:[]) = "The list has two elements: " ++ show x ++ " and " ++ show y  
+> tell (x:y:_) = "This list is long. The first two elements are: " ++ show x ++ " and " ++ show y 
+
+> length' :: (Num b) => [a] -> b  
+> length' [] = 0  
+> length' (_:xs) = 1 + length' xs 
+
+Use @ to find pattern in a list, i.e. xs@(x:y:ys)
+
+No ++ in pattern matching
+
+
+Guards:
+Used when testing if some property or value (or multiple) are true or false
+
+> densityTell :: (RealFloat a) => a -> String  
+> densityTell density  
+>     | density < 1.2 = "Wow! You're going for a ride in the sky!"  
+>     | density <= 1000.0 = "Have fun swimming, but watch out for sharks!"  
+>     | otherwise   = "If it's sink or swim, you're going to sink."  
+> -- otherwise catches all
+
+> densityTell :: (RealFloat a) => a -> a -> String  
+> densityTell mass volume  
+>     | mass / volume < 1.2 = "Wow! You're going for a ride in the sky!"  
+>     | mass / volume <= 1000.0 = "Have fun swimming, but watch out for sharks!"  
+>     | otherwise   = "If it's sink or swim, you're going to sink."
+
+> densityTell :: (RealFloat a) => a -> a -> String  
+> densityTell mass volume  
+>     | density < air = "Wow! You're going for a ride in the sky!"  
+>     | density <= water = "Have fun swimming, but watch out for sharks!"  
+>     | otherwise   = "If it's sink or swim, you're going to sink."  
+>     where density = mass / volume  
+>           air = 1.2  
+>           water = 1000.0  
+> -- note 'where' to show the def of density, air, and water, they are specific to this function only
+> -- OR
+>     where density = mass / volume  
+>           (air, water) = (1.2, 1000.0)  
+> -- using pattern matching
+
+Let biding - bind to variables anywhere 
+	let <bindings> in <expression>
+
+> cylinder :: (RealFloat a) => a -> a -> a  
+> cylinder r h = 
+>     let sideArea = 2 * pi * r * h  
+>         topArea = pi * r ^2  
+>     in  sideArea + 2 * topArea
+
+To bind multiple variables inline, use ;
+Let cannot be used across guards
+
+Case expressions:
+Syntax:
+	case 'expression' of 'pattern' -> 'result'
+			     'pattern' -> 'result'
+			     'pattern' -> 'result'
+			     ...
+If it falls through the list a runtime error occurs 
+
+> describeList :: [a] -> String  
+> describeList xs = "The list is " ++ case xs of [] -> "empty."  
+>                                                [x] -> "a singleton list."  
+>                                                xs -> "a longer list."  
+
+> describeList :: [a] -> String  
+> describeList xs = "The list is " ++ what xs  
+>     where what [] = "empty."  
+>           what [x] = "a singleton list."  
+>           what xs = "a longer list." 
