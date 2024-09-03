@@ -1,0 +1,53 @@
+TFWH Ch 2 Notes:
+
+ghci> 3 +4)
+<interactive>:1:5: parse error on input `)'
+-- On line 1, at position 5, ')' is unexpected
+
+:type function, shows type if function is well formed, fix syntax, add () 
+
+ghci> :type 3+4
+3+4 :: Num a => a
+-- Type 3+4 is a number
+
+Undefined, can cause perpetual loops, even crashes if returned
+
+Where clause does not define a well formed expression
+
+ghci> let x = 3 in x*x
+9
+
+Let/in expressions are well formed assuming the definitions and expressions are
+let <defs> in <expr>
+
+Names for functions and values are lowercase, except for data constructors
+Types, type classes, modules are uppercase
+Operators are functions beginning with a symbol, + or ++
+3+4 == (+) 3 4
+div 3 4 == 3 `div` 4
+Add parentheses for order of operation
+
+Use x for things, ex for lists of things, and xss for lists of lists of things
+
+succ, double :: Integer -> Integer
+succ n = n+1
+double n = 2*n
+-- you can name and create functions like this
+
+(+1) n = n+1
+(0<) n = 0<n
+(<0) n = n<0
+(1/) x = 1/x
+-- or like this, using a section, one argument of an operator is included along with the opp
+* (-1) does not subtract one, rather its negative 1
+Haskell uses - as both subtraction as well as pos/neg
+
+\n - new line
+
+roots :: (Float,Float,Float) -> (Float,Float)
+roots (a,b,c)
+| a == 0 = error "not quadratic"
+| disc < 0 = error "complex roots"
+| otherwise = ((-b-r)/e, (-b+r)/e)
+where {disc = b*b - 4*a*c; r = sqrt d; e = 2*a}
+-- {} can also be used in syntax
