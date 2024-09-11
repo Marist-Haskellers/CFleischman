@@ -1,16 +1,35 @@
 -- get list element by index (zero-based) yields element at index
 elemAt :: [a] -> Int -> a
 elemAt xs i =
-  if i == 0
-    then head xs
-    else elemAt (tail xs) (i - 1)
+  if null xs
+    then error "elemAt: empty list"
+    else
+      if i == 0
+        then head xs
+        else elemAt (tail xs) (i - 1)
+
+-- Guarded expressions
+elemAt' xs i
+  | null xs = error "elemAt': empty list"
+  | i == 0 = head xs
+  | otherwise = elemAt' (tail xs) (i - 1)
+
+-- Pattern matching (breaks with negative input) + guards to fix negatives, uses a non-empty list (x:xs)
+elemAt'' _ [] = error "elemAt'': empty list"
+elemAt'' i (x : xs)
+  | i > 0 = elemAt'' (i - 1) xs
+  | otherwise = x
+
+-- Smart version (point free form)
+elemAt''' = flip (!!)
+
 
 -- determine whether a text string (ignoring spaces and punctuation) is a palindrome
 isPalindrome :: String -> Bool
 isPalindrome x =
   x == reverse x
 
--- break a list into two (roughly) equal-length disjoint sub-lists
+-- break a list into two (roughly)) equal-length disjoint sub-lists
 partitionInHalf :: [a] -> ([a], [a])
 partitionInHalf xs = splitAt half xs
   where
@@ -52,4 +71,4 @@ showDate d m y = show d ++ daySuffix d ++ " " ++ monthName m ++ ", " ++ show (co
 
 -- extract a sub-list containing those elements between ith (inclusive) and kth (exclusive) elements of a given list
 slice :: [a] -> Int -> Int -> [a]
-slice xs i k = 
+slice xs i k =
