@@ -23,7 +23,6 @@ elemAt'' i (x : xs)
 -- Smart version (point free form)
 elemAt''' = flip (!!)
 
-
 -- determine whether a text string (ignoring spaces and punctuation) is a palindrome
 isPalindrome :: String -> Bool
 isPalindrome x =
