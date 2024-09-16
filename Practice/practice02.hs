@@ -19,10 +19,4 @@ applyToEach :: (a -> b) -> [a] -> [b]
 applyToEach _ [] = []
 applyToEach f (x : xs) = f x : applyToEach f xs
 
--- Kattis problem
-solveEverywhere :: [a] -> Int
-solveEverywhere (x:xs)
-    |
-
-
-take x iterate y
+-- Kattis problem in SolveEverywhere.hs
