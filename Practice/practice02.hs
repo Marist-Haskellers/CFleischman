@@ -10,11 +10,19 @@ polynomial :: [Int] -> Int -> Int
 polynomial ys x = sum (zipWith (*) ys (map (x ^) [0 ..]))
 
 -- get the last element of a non-empty list without using the Prelude function last
-lastElem :: [a] -> a
 -- lastElem [] = error "lastElem: empty list"
+lastElem :: [a] -> a
 lastElem = head . reverse
 
 -- implement the logic of the Prelude map function without using that function
 applyToEach :: (a -> b) -> [a] -> [b]
 applyToEach _ [] = []
 applyToEach f (x : xs) = f x : applyToEach f xs
+
+-- Kattis problem
+solveEverywhere :: [a] -> Int
+solveEverywhere (x:xs)
+    |
+
+
+take x iterate y

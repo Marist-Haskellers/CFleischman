@@ -1,0 +1,42 @@
+TFWH Ch 3 Notes:
+
+Numbers:
+
+int		[-2^29, 2^29) limited precision integers
+integer		arbitrary precision int
+rational	arbitrary precision rational numbers
+float		single-precision floating-point numbers
+double		double-precision floating-point numbers
+complex		complex numbers (see Data.Complex for definition)
+
+All numbers are instances of type class Num:
+
+class (Eq a, Show a) => Num a where
+   (+),(-),(*) :: a -> a -> a
+   negate :: a -> a
+   abs, signum :: a -> a
+   fromInteger :: Integer -> a
+
+class Num is subclass of Eq and Show meaning every number can be printed and any two numbers can be compared for equality
+Numbers can be + to, - from, or * by
+Any number can be negated
+abs and signum return the absolute value of a number and its sign
+
+In Haskell, -x (without parenthesis) is negative x, 'negate x'
+
+Num has 2 subclasses, real numbers and fractional numbers
+Fractional numbers have a defined division
+A complex number cannot be real but an be fractional
+
+The floor of a number x is y for y<=x
+
+(leq x) y = leq x y
+(`leq` x) y = y `leq` x = leq y x
+
+Use inline functions and parentheses carefully to make sure your function does what you want it to
+
+The standard prelude defines floor in the following way:
+> floor x = if r < 0 then n-1 else n
+>    where (n,r) = properFraction x
+
+Nat consists of the finite numbers, the partial numbers and the infinite numbers

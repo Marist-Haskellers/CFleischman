@@ -1,0 +1,226 @@
+LYAH Ch 5 Notes:
+
+Recursion - function calling itself through a list
+maximum - list of orderable things (Ord typeclass) -> biggest of them
+
+> maximum' :: (Ord a) => [a] -> a  
+> maximum' [] = error "maximum of empty list"  	-- edge condition
+> maximum' [x] = x  
+> maximum' (x:xs)  
+>     | x > maxTail = x  
+>     | otherwise = maxTail  
+>     where maxTail = maximum' xs
+
+-- Using max function (recursion)
+
+> maximum' :: (Ord a) => [a] -> a  
+> maximum' [] = error "maximum of empty list"  
+> maximum' [x] = x  
+> maximum' (x:xs) = max x (maximum' xs)
+
+Replicate - takes # and int returns list of int repeated. i -> a -> [a]
+
+Take - takes the first x values of [] and returns them in new []
+
+> take' :: (Num i, Ord i) => i -> [a] -> [a]  
+> take' n _  
+>     | n <= 0   = []  	-- takes a 0 or negative numbers and returns empty list
+> take' _ []     = []  	-- takes anything from an empty list
+> take' n (x:xs) = x : take' (n-1) xs
+
+-- Using reverse function (recursion)
+
+> reverse' :: [a] -> [a]  
+> reverse' [] = []  
+> reverse' (x:xs) = reverse' xs ++ [x]
+
+Repeat - takes a element and returns an infinite list of just that number [1,1,1..]
+
+> repeat' :: a -> [a]  
+> repeat' x = x:repeat' x
+
+"Calling repeat 3 will give us a list that starts with 3 and then has an infinite amount of 3's as a tail. 
+So calling repeat 3 would evaluate like 3:repeat 3, which is 3:(3:repeat 3), which is 3:(3:(3:repeat 3)), etc."
+
+Zip - takes two lists and combines the elements of them.
+
+> zip' :: [a] -> [b] -> [(a,b)]  
+> zip' _ [] = []  
+> zip' [] _ = []  
+> zip' (x:xs) (y:ys) = (x,y):zip' xs ys
+
+"Zipping [1,2,3] and ['a','b'] ... (1,'a'):(2,'b'):[] ... which is ... [(1,'a'),(2,'b')]"
+
+Elem - takes an element and a list and sees if that element is in the list. 
+
+> elem' :: (Eq a) => a -> [a] -> Bool  
+> elem' a [] = False  
+> elem' a (x:xs)  
+>     | a == x    = True  	-- "If the head isn't the element then we check the tail."
+>     | otherwise = a `elem'` xs 
+
+
+Quick Sort - sorts a list of typeclass Ord
+
+> quicksort :: (Ord a) => [a] -> [a]  
+> quicksort [] = []  
+> quicksort (x:xs) = 							{-Takes [5,1,9,4,6,7,3] returns
+>     let smallerSorted = quicksort [a | a <- xs, a <= x] 	 	  [1,4,3] ++ [5] ++ [9,6,7]
+>         biggerSorted = quicksort [a | a <- xs, a > x]   	  [] ++ [1] ++ [4,3]     [6,7] ++ [9] ++ []
+>     in  smallerSorted ++ [x] ++ biggerSorted 		  	    [3] ++ [4] ++ []     [] ++ [6] ++ [7]
+							  	     [] ++ [3] ++ []     [] ++ [7] ++ [] -}
+ghci> quicksort [10,2,5,3,1,6,7,4,2,3,4,8,9]  
+      [1,2,2,3,3,4,4,5,6,7,8,9,10]  
+
+ghci> quicksort "the quick brown fox jumps over the lazy dog"  
+      "        abcdeeefghhijklmnoooopqrrsttuuvwxyz"
+
+
+
+LYAH Ch 6 Notes
+
+Higher order functions - functions which take in a function as their parameter function :: (a -> a) -> [a] -> [a]
+
+> multThree :: (Num a) => a -> a -> a -> a  
+> multThree x y z = x * y * z		     <- THESE ARE THE SAME
+				
+> multThree :: (Num a) => a -> (a -> (a -> a))		-- using () to seperate inner functions
+
+Curried Functions and Partial Application
+
+> compareWithHundred :: (Num a, Ord a) => a -> Ordering  
+> compareWithHundred x = compare 100 x 
+
+Can be rewritten as
+
+> compareWithHundred :: (Num a, Ord a) => a -> Ordering  
+> compareWithHundred = compare 100  	-- Note the removal of x from the prior. 
+
+Function that checks if char is uppercase
+
+> isUpperAlphanum :: Char -> Bool  
+> isUpperAlphanum = (`elem` ['A'..'Z'])
+
+Q: Kind of confused how this function works
+
+> zipWith' :: (a -> b -> c) -> [a] -> [b] -> [c]  
+> zipWith' _ [] _ = []  
+> zipWith' _ _ [] = []  
+> zipWith' f (x:xs) (y:ys) = f x y : zipWith' f xs ys
+
+ghci> zipWith' (+) [4,2,5,6] [2,6,2,3]  
+      [6,8,7,9] 
+
+Flip - takes a list and flips the first two elements
+
+> flip' :: (a -> b -> c) -> (b -> a -> c)  
+> flip' f = g  
+>     where g x y = f y x
+
+-- Defining it even more somply
+
+> flip' :: (a -> b -> c) -> b -> a -> c  
+> flip' f y x = f x y
+
+
+Maps and Filters
+
+Map - takes a function and list and applies f(x) producing a new list
+
+> map :: (a -> b) -> [a] -> [b]  
+> map _ [] = []  
+> map f (x:xs) = f x : map f xs  
+
+ghci> map (+3) [1,5,3,1,6]  
+      [4,8,6,4,9]
+
+Filter - takes a relational operator (<,>, <=, >=, ==, even..) and a list, returns list of elements passing 
+
+> filter :: (a -> Bool) -> [a] -> [a]  
+> filter _ [] = []  
+> filter p (x:xs)  
+>     | p x       = x : filter p xs  
+>     | otherwise = filter p xs  
+
+ghci> filter (>3) [1,5,3,2,1,6,4,3,2,1]  
+      [5,6,4] 
+
+Using filter to make quick sort more efficient
+
+> quicksort :: (Ord a) => [a] -> [a]  
+> quicksort [] = []  
+> quicksort (x:xs) = 
+>     let smallerSorted = quicksort (filter (<=x) xs)  
+>         biggerSorted = quicksort (filter (>x) xs)  
+>     in  smallerSorted ++ [x] ++ biggerSorted
+
+takeWhile - takes a predicate and a list and then goes from the beginning of the list and returns its elements while the predicate holds true
+Q: a little confused on how it works
+
+Collatz sequences
+
+> chain :: (Integral a) => a -> [a]  
+> chain 1 = [1]  
+> chain n  
+>     | even n =  n:chain (n `div` 2)  
+>     | odd n  =  n:chain (n*3 + 1) 
+
+
+Lambdas - one time use functions useing parenthesis
+
+Instead of using the where function in: 
+
+> numLongChains :: Int  
+> numLongChains = length (filter isLong (map chain [1..100]))  
+>     where isLong xs = length xs > 15
+
+-- The lambda is used to do
+
+> numLongChains :: Int  
+> numLongChains = length (filter (\xs -> length xs > 15) (map chain [1..100])) 
+
+Redefining the flip function using Lambda
+
+> flip' :: (a -> b -> c) -> b -> a -> c  
+> flip' f = \x y -> f y x 
+
+
+Left fold vs Right fold - when you want to traverse a list to return something
+
+> sum' :: (Num a) => [a] -> a  
+> sum' xs = foldl (\acc x -> acc + x) 0 xs
+
+ghci> sum' [3,5,2,1]  	-- 0+3 -> 3+5 -> ... 10+1
+      11  
+
+> map' :: (a -> b) -> [a] -> [b]  
+> map' f xs = foldr (\x acc -> f x : acc) [] xs 
+
+ghci> map' (+3) [1,2,3]	   -- 3+3=6 6:[] (put 6 in empty list), 2+3=5 5:[6] ... 4:[5,6]
+      [4,5,6]
+
+Using the '$' - Function application
+Denotes the relationship between two functions to be of low precedence
+
+> sum (map sqrt [1..130])
+
+Is the same as
+
+> sum $ map sqrt [1..130]
+
+> sum (filter (> 10) (map (*2) [2..10]))
+> sum $ filter (> 10) $ map (*2) [2..10]
+
+
+Function composition - using the '.' 
+
+ghci> map (negate . abs) [5,-3,-6,7,-3,2,-19,24]  -- makes all numbers negative
+      [-5,-3,-6,-7,-3,-2,-19,-24] 
+
+Pointless/free stile
+
+> fn x = ceiling (negate (tan (cos (max 50 x))))  
+
+Can be rewritten as
+
+> fn = ceiling . negate . tan . cos . max 50  
