@@ -1,16 +1,16 @@
 import Data.List (nub)
 
 main :: IO ()
-main = interact (showResult . doTheWork . parseInput . lines)
+main = interact (showResult . doTheWork . parseInput)
 
-parseInput :: [String] -> ([Int], [[String]])
-parseInput (x : xs) = (map read [x], splitTrips (map read [x]) xs)
+parseInput :: String -> [String]
+parseInput = lines . tail
+
+doTheWork :: [String] -> [Int]
+doTheWork = map (length . nub) . splitTrips . tail
   where
-    splitTrips [] _ = []
-    splitTrips (y : ys) zs = take y zs : splitTrips ys (drop y zs)
-
-doTheWork :: ([Int], [[String]]) -> [Int]
-doTheWork (_, trips) = map (length . nub) trips
+    splitTrips [] = []
+    splitTrips (x : xs) = take (read x) xs : splitTrips (drop (read x) xs)
 
 showResult :: [Int] -> String
 showResult = unlines . map show
