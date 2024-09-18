@@ -1,0 +1,290 @@
+LYAH Ch 7 Notes:
+
+Loosely coupled - code separated in self-contained modules which don't rely on each other too much
+
+> import Data.List
+>
+> numUniques :: (Eq a) => [a] -> Int
+> numUniques = length . nub
+
+:m - loads modules in ghci
+ghci> :m + Data.List Data.Map Data.Set  
+
+
+> import Data.List (nub, sort)  -- imports only nub and sort
+> import Data.List hiding (nub)  -- hides nub, shows all others
+
+> import qualified Data.Map as M  -- to reference Data.Map's filter function, we just use M.filter
+
+
+Functions in Data.List:
+
+intersperse - takes an element and a list and puts that element in between each element in the list
+	ghci> intersperse 0 [1,2,3,4,5,6]  
+	>     [1,0,2,0,3,0,4,0,5,0,6]  
+
+intercalate - [a] -> [[a]] -> [b]. It inserts [a] in between the lists of [[a]] then combines them into [b]
+	ghci> intercalate " " ["hey","there","folks"]  
+	>     "hey there folks"
+
+transpose - combines the first elements of a list of lists, then the second element, then the third..
+	ghci> transpose [[1,2,3],[4,5,6],[7,8,9]]  
+	>     [[1,4,7],[2,5,8],[3,6,9]] 
+
+foldl' and foldl1' - for when the lazy versions dont work
+
+concat - flattens a list of lists into a list of elements
+	ghci> concat [[3,4,5],[2,3,4],[2,1,1]]  
+	>     [3,4,5,2,3,4,2,1,1]
+
+concatMap - same as maping a function to a list
+	ghci> concatMap (replicate 4) [1..3]  
+	>     [1,1,1,1,2,2,2,2,3,3,3,3] 
+
+and - takes a list of boolean values and returns T/F depending if values test either
+	ghci> and $ map (>4) [5,6,7,8]  
+	>     True  
+	ghci> and $ map (==4) [4,4,4,3,4]  
+	>     False 
+
+or - similar to and, if one value passes it gives T
+	ghci> or $ map (==4) [2,3,4,5,6,1]  
+	>     True  
+
+any and all - can be used to replace and/or to simplify having to use map
+
+iterate - (a -> a) -> a -> [a]. It takes a function and iterates it over a starting value. (Used with take)
+	ghci> take 10 $ iterate (*2) 1  
+	>     [1,2,4,8,16,32,64,128,256,512]
+
+splitAt - takes a number n and a list and splits the list into two at the index n
+	ghci> splitAt 3 "heyman"  
+	>     ("hey","man")
+
+takeWhile - takes elements from a list while it satisfies a condition.
+	ghci> takeWhile (>3) [6,5,4,3,2,1,2,3,4,5,4,3,2,1]  
+	>     [6,5,4] 
+
+dropWhile - similar to takeWhile but drops element if True, then once element is false, returns the rest
+
+span - like takeWhile except the excess droped from take while is actually remembered here
+	ghci> let (fw, rest) = span (/=' ') "This a sentence" in "First word:" ++ fw ++ ", the rest:" ++ rest  
+	>     "First word: This, the rest: a sentence" 
+
+break - similar to span but breaks when first true, keeping excess
+	ghci> break (==4) [1,2,3,4,5,6,7]  
+	>     ([1,2,3],[4,5,6,7])  
+	ghci> span (/=4) [1,2,3,4,5,6,7]  
+	>     ([1,2,3],[4,5,6,7]) 
+
+sort - sorts a list of type Ord
+	ghci> sort [8,5,3,2,1,6,4,2]  
+	>     [1,2,2,3,4,5,6,8] 
+
+inits and tails - similar to init and tail, these are recursive over a given list
+	ghci> let w = "w00t" in zip (inits w) (tails w)  
+	>     [("","w00t"),("w","00t"),("w0","0t"),("w00","t"),("w00t","")]
+  
+isInfixOf - takes a list and checks if its in another list, returns Boolean
+	ghci> "cat" `isInfixOf` "im a cat burglar"  
+	>     True 
+
+isPrefixOf and isSuffixOf - both search for a sublist, the former at the beginning and the ladder at the end
+	ghci> "hey" `isPrefixOf` "hey there!"  
+	>     True 
+	ghci> "there!" `isSuffixOf` "oh hey there!"  
+	>     True  
+
+elem and notElem - check if an element is inside a list or not
+
+partition - takes a predicate and a list and returns two lists one containing T element and one with F
+	ghci> partition (>3) [1,3,5,6,3,2,1,0,3,7]  
+	>     ([5,6,7],[1,3,3,2,1,0,3]) 
+
+
+NOTE: Partition scans the whole of a list, whereas functions like span and break only check until failure
+
+
+find seems straight forwards except for the Maybe thing. 
+
+":
+find - takes a list and a predicate and returns the first element that satisfies the predicate. It returns that element wrapped in a Maybe value. 
+
+Maybe value can either be Just something or Nothing. A maybe value can be either no elements or a single element.
+
+ghci> find (>4) [1,2,3,4,5,6]  
+Just 5  
+ghci> find (>9) [1,2,3,4,5,6]  
+Nothing  
+ghci> :t find  
+find :: (a -> Bool) -> [a] -> Maybe a
+
+:"
+
+Maybe can only contain one element or no elements
+
+elemIndex - looks for an element in a list. Returns a Maybe value too
+	ghci> 4 `elemIndex` [1,2,3,4,5,6]  
+	>     Just 3 
+
+elemIndices - similar to elemIndex, but searches for all occourances
+	ghci> ' ' `elemIndices` "Where are the spaces?"  
+	>     [5,9,13] 
+
+findIndex and findIndices - return the index of the first occurring and all occurrences respectively
+	ghci> findIndex (==4) [5,3,2,1,6,4]  
+	>     Just 5 
+	ghci> findIndices (`elem` ['A'..'Z']) "Where Are The Caps?"  -- searches for occurrences of a capital
+	>     [0,6,10,14] 
+
+For zipping more than two lists together (i.e. more than jsut zip and zipWith):
+	zip3 and zip4
+	zipWith3 and zipWith4
+   these numbers go up to 7
+
+	ghci> zipWith3 (\x y z -> x + y + z) [1,2,3] [4,5,2,2] [2,2,3]  -- adds value at index 0, 1, 2 
+	>     [7,9,8] 
+
+
+**
+lines - good for dealing with input, [string] -> [[string]]. takes a list of strings and breaks it into       **								multiple lists of strings (or lines)
+
+	ghci> lines "first line\nsecond line\nthird line"  
+	>     ["first line","second line","third line"] 
+
+\n - character for a 'unix newline'
+
+unlines - inverse of lines, takes list of strings and combines them into one string with '\n' between them
+
+words and unwords - split a line of text into words and joins words into a line of text
+	ghci> words "hey these are the words in this sentence"  
+	>     ["hey","these","are","the","words","in","this","sentence"]  
+	ghci> unwords ["hey","there","mate"]  
+	>     "hey there mate"
+
+nub - takes in a list and returns a list the same as the input except all duplicate items have been removed
+	ghci> nub [1,2,3,4,3,2,1,2,3,4,3,2,1]  
+	>     [1,2,3,4]  
+
+delete - takes an element and a list and deletes the first occurrence of the element
+
+\\ - the list difference function, takes two lists, a and b, and removes elements in b from a
+	ghci> [1..10] \\ [2,5,9]  
+	>     [1,3,4,6,7,8,10]
+
+union - combines two lists, a and b, on the final element of list a, but removes duplicates from list b
+	ghci> [1..7] `union` [5..10]  
+	>     [1,2,3,4,5,6,7,8,9,10]  	-- note how elements 5,6,7 were removed from list b when it joined a
+
+intersect - takes two lists and returns elements in both lists
+	ghci> [1..7] `intersect` [5..10]  
+	>     [5,6,7] 
+
+insert :: (Ord a) => a -> [a] -> [a]. Inserts an element into the first position of one that is <= to it
+	ghci> insert 4 [3,5,1,2,8,2]  
+	>     [3,4,5,1,2,8,2]
+
+
+Generic functions (by group):
+
+genericLength, genericTake, genericDrop, genericSplitAt, genericIndex and genericReplicate
+	These functions are the same as length, take, drop, splitAt, !! and replicate, however 
+	are ueful when wanting to work with Intergral or Num typeclasses
+
+> let xs = [1..6] in sum xs / length xs -- cannot use '/' on sum xs / length xs since length gives an Int
+-- so generic function from Data.List is useful
+> let xs = [1..6] in sum xs / genericLength xs
+
+nubBy, deleteBy, unionBy, intersectBy and groupBy
+	nub, delete, union, intersect and group's generic counterparts
+	These are useful as the regular ones test with '==' where as generic use inequality functions and '=='
+
+sortBy, insertBy, maximumBy and minimumBy
+	sort, insert, maximum and minimum's generics
+	They take a function that determine if one element is greater, smaller or equal to the other
+
+
+/FOR REMAINING NOTES THE OFFICAL DOCUMENTATION IS LISTED FOR MODULES. AS WELL, SOME IMPORTANT FUNCTIONS/
+
+Functions in Data.Char: (https://hackage.haskell.org/package/base-4.20.0.1/docs/Data-Char.html)
+
+isLower - checks whether a character is lower-cased
+isUpper - checks whether a character is upper-cased
+isAlphaNum - checks whether a character is a letter or a number
+isDigit - checks whether a character is a digit
+isLetter - checks whether a character is a letter
+isNumber - checks whether a character is numeric
+
+Q: confused about generalCategory
+
+toUpper - converts a character to upper-case, all others are unchanged
+toLower - converts a character to lower-case
+
+
+Functions in Data.Map: (https://hackage.haskell.org/package/containers-0.4.0.0/docs/Data-Map.html)
+
+lookup - finds the paired element given one element in the pair, i.e.:
+> phoneBook = 
+>     [("amelia","555-2938")  
+>     ,("freya","452-2928")  
+>     ,("isabella","493-2928")  
+>     ,("neil","205-2928")  
+>     ,("roald","939-8282")  
+>     ,("tenzing","853-2492")  
+>     ]  
+
+> findKey :: (Eq k) => k -> [(k,v)] -> Maybe v  
+> findKey key = foldr (\(k,v) acc -> if key == k then Just v else acc) Nothing  
+
+ghci> findKey "tenzing" phoneBook  
+>     Just "853-2492"  
+ghci> findKey "amelia" phoneBook  
+>     Just "555-2938"  
+ghci> findKey "christopher" phoneBook  
+>     Nothing 
+
+fromList - takes an association list and returns a map with the same associations
+toList - the inverse of fromList
+empty - an empty map, takes no arguments, returns an empty map
+insert - a -> [a] -> [a]. Returns a new map that's just like the old one, only with the key and value inserted
+null - checks if a map is empty
+size - returns the size of the map
+member - takes a key and a map and returns whether the key is in the map or not
+
+fromListWith - acts like fromList but allows for an additional function for dealing with duplicates
+> phoneBookToMap :: (Ord k) => [(k, String)] -> Map.Map k String  
+> phoneBookToMap xs = Map.fromListWith (\number1 number2 -> number1 ++ ", " ++ number2) xs  
+
+
+Functions in Data.Set (https://hackage.haskell.org/package/containers-0.7/docs/Data-Set.html)
+
+*Since functions in Data.Set overlap with Prelude, we must do a qualified import:
+> import qualified Data.Set as Set  
+
+intersection - to see which elements two sets both share
+difference - to see which elements in two sets are different, depending on order input
+
+
+How to create your own moduel:
+
+> module Geometry  
+> ( cuboidArea
+> , cuboidVolume  
+> ) where  
+    
+> cuboidVolume :: Float -> Float -> Float -> Float  
+> cuboidVolume a b c = rectangleArea a b * c  
+  
+> cuboidArea :: Float -> Float -> Float -> Float  
+> cuboidArea a b c = rectangleArea a b * 2 + rectangleArea a c * 2 + rectangleArea c b * 2  
+  
+> rectangleArea :: Float -> Float -> Float  
+> rectangleArea a b = a * b  
+
+-- NOTE: rectangleArea is never made part of the moduel but is stil used by moduel parts
+
+To import your moduel:
+
+> import Geometry
+
+-- NOTE: Geometry.hs has to be in the same folder that the program that's importing it is in
