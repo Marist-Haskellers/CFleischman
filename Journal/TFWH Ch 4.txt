@@ -1,0 +1,23 @@
+TFWH Ch 4 Notes:
+
+Lists:
+
+Cannot mix types in lists
+[[1,2,3], [4,5]] - good
+["tea", "for", 2] - not good
+
+[1,2,3] is 'syntactic sugar' for 1:2:3:[] which essentially means 3->[], 2->[3], 1->[2,3]
+
+':' - cons or constructor operator, it constructs a list from what it is given (right association)
+
+3 types of lists:
+
+finite list - built from ':' and [], i.e. 1:2:3:[]
+
+partial list - built from ':' and undefined
+
+infinite list - built from ':' only i.e. [1..] is an infinite list of nonnegative integers
+
+The iterate function produces an infinite list
+   iterate (+1) 1 is the same as [1..]
+
