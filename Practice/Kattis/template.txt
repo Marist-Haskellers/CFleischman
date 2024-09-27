@@ -1,0 +1,14 @@
+type Input = String
+type Output = String
+
+main :: IO ()
+main = interact $ showResult . doTheWork . parseInput
+
+parseInput :: Input -> _
+parseInput = map read . ___ . words
+
+doTheWork :: _ -> _
+doTheWork = undefined
+
+showResult :: _ -> Output
+showResult = show ____

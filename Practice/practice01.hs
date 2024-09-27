@@ -1,3 +1,7 @@
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+
+{-# HLINT ignore "Use guards" #-}
+
 -- get list element by index (zero-based) yields element at index
 elemAt :: [a] -> Int -> a
 elemAt xs i =
@@ -9,18 +13,21 @@ elemAt xs i =
         else elemAt (tail xs) (i - 1)
 
 -- Guarded expressions
+elemAt' :: (Eq t, Num t) => [a] -> t -> a
 elemAt' xs i
   | null xs = error "elemAt': empty list"
   | i == 0 = head xs
   | otherwise = elemAt' (tail xs) (i - 1)
 
 -- Pattern matching (breaks with negative input) + guards to fix negatives, uses a non-empty list (x:xs)
+elemAt'' :: (Ord t, Num t) => t -> [a] -> a
 elemAt'' _ [] = error "elemAt'': empty list"
 elemAt'' i (x : xs)
   | i > 0 = elemAt'' (i - 1) xs
   | otherwise = x
 
 -- Smart version (point free form)
+elemAt''' :: Int -> [c] -> c
 elemAt''' = flip (!!)
 
 -- determine whether a text string (ignoring spaces and punctuation) is a palindrome
@@ -70,4 +77,17 @@ showDate d m y = show d ++ daySuffix d ++ " " ++ monthName m ++ ", " ++ show (co
 
 -- extract a sub-list containing those elements between ith (inclusive) and kth (exclusive) elements of a given list
 slice :: [a] -> Int -> Int -> [a]
-slice xs i k =
+slice [] _ _ = []
+slice xs i k = cut xs i k 0
+  where
+    cut (x : xs) i k n
+      | n < i = cut xs i k (n + 1)
+      | n > k = []
+      | otherwise = x : cut xs i k (n + 1)
+
+-- rotate a list n places in the left direction
+rotateL :: Int -> [a] -> [a]
+rotateL _ [] = []
+rotateL n xs = take positions . drop (n `mod` positions) . cycle $ xs
+  where
+    positions = length xs
