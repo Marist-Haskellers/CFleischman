@@ -428,21 +428,92 @@ ghci> pred Saturday
 ghci> [Thursday .. Sunday]  
 > [Thursday, Friday, Saturday, Sunday]
 
+
 Type synonyms:
-
 type String = [Char]
+-- do nothing but make code easier to comprehend
+> type Name = datatype 
+
+-- Example of a linear search look-up
+> import qualified Data.Map as Map    
+> data LockerState = Taken | Free deriving (Show, Eq)  
+> type Code = String  
+> type LockerMap = Map.Map Int (LockerState, Code) 
+
+> lockerLookup :: Int -> LockerMap -> Either String Code  
+> lockerLookup lockerNumber map = 
+>     case Map.lookup lockerNumber map of  
+>         Nothing -> Left $ "Locker number " ++ show lockerNumber ++ " doesn't exist!"  
+>         Just (state, code) -> if state /= Taken  
+>                                 then Right code  
+>                                 else Left $ "Locker " ++ show lockerNumber ++ " is already taken!" 
+
+Recursive Data Structures:
+	Lists:
+		[1,2,3,4,5] == 1:(2:(3:(4:(5:[]))))
+
+Cons:
+-- Empty is like []
+> 4 `Cons` (5 `Cons` Empty)
+> 4:(5:[])
+
+":-:" - fixity declaration
+> infixr 5 :-:
+> data List a = Empty | a :-: (List a) deriving (Show, Read, Eq, Ord)  
+This puts 5 on front of Empty or infront of other elements into a list
+
+Typeclasses 102:
+
+prelude def of Eq:
+> class Eq a where  
+>     (==) :: a -> a -> Bool  
+>     (/=) :: a -> a -> Bool  
+>     x == y = not (x /= y)  
+>     x /= y = not (x == y)  -- used so that we don't have to specify cases where x /= (not equal) y
+
+> data TrafficLight = Red | Yellow | Green  
+
+> instance Eq TrafficLight where  
+>     Red == Red = True  
+>     Green == Green = True  
+>     Yellow == Yellow = True  
+>     _ == _ = False  
+
+> instance (Eq m) => Eq (Maybe m) where  -- using a class constraint to make m of Eq and of Maybe
+>     Just x == Just y = x == y  
+>     Nothing == Nothing = True  
+>     _ == _ = False  
+
+Yes/No typeclass:
+> class YesNo a where  
+>     yesno :: a -> Bool  
+
+> instance YesNo Int where  -- Int is of class YesNo and returns if Int is any number other than 0
+>     yesno 0 = False  
+>     yesno _ = True  
+
+> instance YesNo (Maybe a) where  -- YesNo version of Maybe a
+>     yesno (Just _) = True  
+>     yesno Nothing = False 
+
+Functor:
+used for things that can be mapped over
+
+takes thing a and applies function (a -> b) on it turning it into thing b
+
+> class Functor f where  
+>     fmap :: (a -> b) -> f a -> f b  
+
+> instance Functor [] where  -- instance for lists
+>     fmap = map  
 
 
+Type constructor - takes types as parameters to produce concrete types
 
+ghci> :k Int  -- :k - examines the type of given
+> Int :: *  -- * - the type is concrete (takes no parameters and only values of a concrete type)
 
-
-
-
-
-
-
-
-
+Types and Kinds are different - :t isUpper > Char -> Bool, :t isUpper 'A' > Bool; but kind is * both
 
 
 
