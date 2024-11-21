@@ -2,6 +2,7 @@
 xs = 1 : 2 : 3 : []
 -- = [1] -> [2] -> [3] -> *
 
+Make circular:
 xs = fix([1, 2, 3] ++)
 -- = [1] -> [2] -> [3] -> [1] -> [2] -> [3] -> [1]...
 -- fix([1,2,3] ++) -> function that, given a list, appends that list to itself recursively
