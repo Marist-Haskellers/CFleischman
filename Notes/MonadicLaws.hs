@@ -1,4 +1,7 @@
 {-
+Symbols:
+   mappend: <>
+
 Monoid Laws:
 mempty <> u = u | Left Identity
 u <> mempty = u | Right Identity
